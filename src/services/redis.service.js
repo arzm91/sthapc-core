@@ -36,6 +36,22 @@ class RedisService {
 
     }
 
+	async getState(company, plant, area, equipment, tag) {
+
+    	await this.connect();
+
+    	const key =
+       	 `state:${company}:${plant}:${area}:${equipment}:${tag}`;
+
+    	const value = await redis.get(key);
+
+    	if (!value) {
+        return null;
+    }
+
+    return JSON.parse(value);
+
+ }
 }
 
 module.exports = new RedisService();

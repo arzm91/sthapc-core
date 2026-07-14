@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const stateRoutes = require("./routes/state.routes");
 
 const ingestRoutes = require("./routes/ingest.routes");
 
@@ -20,6 +21,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/v1/ingest", ingestRoutes);
+app.use("/api/v1/state", stateRoutes);
 
 /*
 Compatibilidade temporária.
