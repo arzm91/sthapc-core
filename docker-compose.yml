@@ -1,0 +1,20 @@
+services:
+
+  sthapc-core:
+
+    build: .
+
+    container_name: sthapc-core
+
+    restart: always
+
+    ports:
+      - "3001:3001"
+
+    networks:
+      - sthapc-network
+
+networks:
+
+  sthapc-network:
+    external: true
