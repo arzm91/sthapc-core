@@ -14,6 +14,12 @@ class StateService {
 
     }
 
+    async getAll() {
+
+        return await redisService.getAllStates();
+
+    }
+
 }
 
 module.exports = new StateService();

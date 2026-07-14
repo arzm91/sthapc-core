@@ -43,3 +43,24 @@ exports.getState = async (req, res) => {
     }
 
 };
+
+exports.getAllStates = async (req, res) => {
+
+    try {
+
+        const states = await stateService.getAll();
+
+        return res.json(states);
+
+    } catch (err) {
+
+        console.error(err);
+
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+};

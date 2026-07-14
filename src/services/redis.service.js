@@ -19,15 +19,10 @@ class RedisService {
             `state:${payload.company}:${payload.plant}:${payload.area}:${payload.equipment}:${payload.tag}`;
 
         const value = {
-
             value: payload.value,
-
             quality: payload.quality,
-
             timestamp: payload.timestamp,
-
             source: payload.source
-
         };
 
         await redis.set(key, JSON.stringify(value));
@@ -36,22 +31,67 @@ class RedisService {
 
     }
 
-	async getState(company, plant, area, equipment, tag) {
+    async getState(company, plant, area, equipment, tag) {
 
-    	await this.connect();
+        await this.connect();
 
-    	const key =
-       	 `state:${company}:${plant}:${area}:${equipment}:${tag}`;
+        const key =
+            `state:${company}:${plant}:${area}:${equipment}:${tag}`;
 
-    	const value = await redis.get(key);
+        const value = await redis.get(key);
 
-    	if (!value) {
-        return null;
+        if (!value) {
+            return null;
+        }
+
+        return JSON.parse(value);
+
     }
 
-    return JSON.parse(value);
+    async getAllStates() {
 
- }
+        await this.connect();
+
+        const result = [];
+
+        let cursor = "0";
+
+        do {
+
+            const reply = await redis.scan(cursor, {
+                MATCH: "state:*",
+                COUNT: 100
+            });
+
+            cursor = reply.cursor;
+
+            for (const key of reply.keys) {
+
+                const value = await redis.get(key);
+
+                if (!value) {
+                    continue;
+                }
+
+                const parts = key.split(":");
+
+                result.push({
+                    company: parts[1],
+                    plant: parts[2],
+                    area: parts[3],
+                    equipment: parts[4],
+                    tag: parts[5],
+                    ...JSON.parse(value)
+                });
+
+            }
+
+        } while (cursor !== "0");
+
+        return result;
+
+    }
+
 }
 
 module.exports = new RedisService();
